@@ -1,0 +1,31 @@
+## 8-Bit Apfelstrudel CPU Compiler
+### Instruction-Set Format
+<img width="610" height="143" alt="image" src="https://github.com/user-attachments/assets/a6104dc2-b31a-4d65-80f5-305247acf5f6" />
+
+### Assembly Code Example:
+``` txt
+SET 134 IN0
+SET 12 IN1
+ADD GP0
+XOR GP1
+MOVE GP0 IN0
+SET 130 IN1
+SUB GP2
+CMP
+LOAD 243 GP3
+JUMP 5
+```
+### Raw Binary Example:
+The following binary sequence was translated from the assembly code shown above. 
+``` txt
+000000001000011000000110
+000000000000110000000111
+000000110000000000000000
+000010010000000000000001
+000000100000000000000110
+000000001000001000000111
+000001000000000000000010
+000010110000000000000000
+000000011111001100000011
+000011000000000000000101
+```
