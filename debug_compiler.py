@@ -11,7 +11,9 @@ def format_instruction(bit_string):
     return parts
 
 # read contents from assembly code
-with open("./apfelstrudel.apf", "r") as asm_file:
+SCRIPT_PATH = "./debug_script.apf"
+
+with open(SCRIPT_PATH, "r") as asm_file:
     asm_lines = [part.replace("\n", "") for part in asm_file.readlines()]
 
 # compile every single line from assembly code
