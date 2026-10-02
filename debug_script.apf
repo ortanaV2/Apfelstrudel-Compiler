@@ -1,10 +1,19 @@
-SET 134 IN0
-SET 12 IN1
-ADD GP0
-XOR GP1
-MOVE GP0 IN0
-SET 130 IN1
-SUB GP2
-CMP
-LOAD 243 GP3
-JUMP 1
+SET 17 GP0     ; Dividend
+SET 5 GP1      ; Divisor
+SET 0 GP2      ; Quotient
+SET 1 GP3      ; Konstante 1
+SET 0 IN0      ; Null zum Prüfen
+MOVE GP1 IN1   ; IN1 = Divisor
+CMP            ; Divisor == 0 ?
+BEQ 19         ; ja -> Fehler
+MOVE GP0 IN0   ; Schleifenanfang: IN0 = Dividend
+MOVE GP1 IN1   ; IN1 = Divisor
+CMP            ; Dividend vergleichen mit Divisor
+BLT 18         ; Dividend < Divisor -> fertig
+SUB GP0        ; GP0 = Dividend - Divisor
+MOVE GP2 IN0   ; IN0 = Quotient
+MOVE GP3 IN1   ; IN1 = 1
+ADD GP2        ; Quotient + 1
+JUMP 9         ; zurück zum Schleifenanfang
+HALT           ; fertig: GP2 = Quotient, GP0 = Rest
+HALT           ; Fehler: Division durch 0

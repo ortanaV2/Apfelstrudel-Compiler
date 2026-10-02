@@ -19,5 +19,6 @@ with open(SCRIPT_PATH, "r") as asm_file:
 # compile every single line from assembly code
 for line in asm_lines:
     translated_line = apfelstrudelCompiler.translate(line)
-    print(format_instruction(translated_line))
+    print(translated_line)
+    # print(format_instruction(translated_line)) # *Optional formatted print
     
