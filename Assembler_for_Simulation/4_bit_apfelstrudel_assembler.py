@@ -3,7 +3,7 @@
 
 Instruction (14 Bit): [S5..S0 OPCODE][V3..V0][RS1 RS0][RT1 RT0]
 S5 (MSB des Opcodes) = 1 bei allen Befehlen, die in ein Register schreiben
-(SET, MOVE, ADD, SUB, AND, OR, XOR, NOT, MUL), sonst 0.
+(SET, MOVE, ADD, SUB, AND, OR, XOR, NOT, SHR, SHL), sonst 0.
 
 Zeilenzaehlung im Assembly: Sprungziele sind 1-basiert (1..16), der Assembler
 schreibt die 0-basierte CPU-Adresse (0..15). Leer-/Kommentarzeilen zaehlen nicht.
@@ -19,16 +19,16 @@ import sys
 
 OPCODES = {
     "SET": 31, "MOVE": 30, "ADD": 29, "SUB": 28, "AND": 27, "OR": 26,
-    "XOR": 25, "NOT": 24, "MUL": 23, "CMP": 22,
+    "XOR": 25, "NOT": 24, "CMP": 23, "SHR": 22, "SHL": 21,
     "BLT": 0, "BGT": 1, "BNE": 2, "BEQ": 3, "JMP": 4, "HALT": 5, "NOP": 6,
 }
 # Basis-Opcodes oben sind die unteren 5 Bit (S4..S0). S5 wird je nach Befehlsart gesetzt.
-WRITES_REG = {"SET", "MOVE", "ADD", "SUB", "AND", "OR", "XOR", "NOT", "MUL"}
+WRITES_REG = {"SET", "MOVE", "ADD", "SUB", "AND", "OR", "XOR", "NOT", "SHR", "SHL"}
 S5 = 0b100000
 REGS = {"INA": 0, "INB": 1, "GPA": 2, "GPB": 3}
 COND_BRANCHES = {"BLT", "BGT", "BNE", "BEQ"}      # benoetigen vorheriges CMP
 
-ALU_OPS = {"ADD", "SUB", "AND", "OR", "XOR", "NOT", "MUL"}
+ALU_OPS = {"ADD", "SUB", "AND", "OR", "XOR", "NOT", "SHR", "SHL"}   # SHR/SHL/NOT: nur INA, 1 Operand (Ziel)
 BRANCH_OPS = {"BLT", "BGT", "BNE", "BEQ", "JMP"}
 
 
