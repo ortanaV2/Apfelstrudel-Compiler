@@ -19,14 +19,13 @@ import sys
 
 OPCODES = {
     "SET": 31, "MOVE": 30, "ADD": 29, "SUB": 28, "AND": 27, "OR": 26,
-    "XOR": 25, "NOT": 24, "CMP": 23, "SHR": 22, "SHL": 21,
+    "XOR": 25, "NOT": 24, "SHR": 23, "SHL": 22,
     "BLT": 0, "BGT": 1, "BNE": 2, "BEQ": 3, "JMP": 4, "HALT": 5, "NOP": 6,
 }
 # Basis-Opcodes oben sind die unteren 5 Bit (S4..S0). S5 wird je nach Befehlsart gesetzt.
 WRITES_REG = {"SET", "MOVE", "ADD", "SUB", "AND", "OR", "XOR", "NOT", "SHR", "SHL"}
 S5 = 0b100000
 REGS = {"INA": 0, "INB": 1, "GPA": 2, "GPB": 3}
-COND_BRANCHES = {"BLT", "BGT", "BNE", "BEQ"}      # benoetigen vorheriges CMP
 
 ALU_OPS = {"ADD", "SUB", "AND", "OR", "XOR", "NOT", "SHR", "SHL"}   # SHR/SHL/NOT: nur INA, 1 Operand (Ziel)
 BRANCH_OPS = {"BLT", "BGT", "BNE", "BEQ", "JMP"}
@@ -84,6 +83,8 @@ def first_pass(lines):
 
 def encode(mnemonic, args, labels, base):
     m = mnemonic.upper()
+    if m == "CMP":
+        raise AsmError("CMP gibt es nicht mehr - BLT/BGT/BNE/BEQ vergleichen INA mit INB automatisch")
     if m not in OPCODES:
         raise AsmError(f"Unbekannter Befehl '{mnemonic}'")
     op, v, rs, rt = OPCODES[m], 0, 0, 0
@@ -114,7 +115,7 @@ def encode(mnemonic, args, labels, base):
             v = line_no - 1
         if not 0 <= v <= 15:
             raise AsmError(f"Label zeigt auf Zeile {v + 1} - nur Zeilen 1..16 sind adressierbar")
-    elif m in ("CMP", "HALT", "NOP"):
+    elif m in ("HALT", "NOP"):
         check_args(m, args, 0)
 
     if m in WRITES_REG:
@@ -128,15 +129,8 @@ def assemble(source_lines, compact=False):
         print(f"WARNUNG: {len(instrs)} Instruktionen, aber Sprungadressen "
               f"erreichen nur Zeilen 1..16.", file=sys.stderr)
     out = []
-    seen_cmp = False
     for idx, (lineno, line) in enumerate(instrs):
         parts = line.replace(",", " ").split()
-        mn = parts[0].upper()
-        if mn == "CMP":
-            seen_cmp = True
-        elif mn in COND_BRANCHES and not seen_cmp:
-            print(f"WARNUNG: Zeile {lineno} ('{line}'): {mn} ohne vorheriges CMP "
-                  f"im Quelltext - Flag-Register evtl. undefiniert.", file=sys.stderr)
         try:
             op, v, rs, rt = encode(parts[0], parts[1:], labels, idx)
         except AsmError as e:
